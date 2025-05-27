@@ -27,7 +27,7 @@ public class SoporteService {
         soporte.setUsuarioId(usuarioId);
         soporte.setDescripcion(descripcion);
         soporte.setTipoProblema(tipoProblema);
-        soporte.setEstado(EstadoSoporte.ABIERTO); // Usar el enum
+        soporte.setEstado(EstadoSoporte.ABIERTO);
         soporte.setFechaCreacionSolicitud(LocalDateTime.now());
         return soporteRepository.save(soporte);
     }
