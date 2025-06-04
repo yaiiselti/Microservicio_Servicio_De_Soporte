@@ -12,7 +12,7 @@ public class UsuarioClient {
     private final RestTemplate restTemplate = new RestTemplate();
 
     public UsuarioDTO getUsuarioById(int usuarioId) {
-        String url = "http://localhost:8085/Usuarios" + usuarioId;
+        String url = "http://localhost:8085/Usuarios/" + usuarioId;
         return restTemplate.getForObject(url, UsuarioDTO.class);
     }
 }
