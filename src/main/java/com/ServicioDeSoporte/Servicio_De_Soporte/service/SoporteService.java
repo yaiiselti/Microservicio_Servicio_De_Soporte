@@ -32,12 +32,9 @@ public class SoporteService {
         return soporteRepository.save(soporte);
     }
 
-    public Soporte actualizarEstado(int soporteId, EstadoSoporte nuevoEstado, int usuarioId) {
-        UsuarioDTO usuario = usuarioClient.getUsuarioById(usuarioId);
-        if (!"SOPORTE_TECNICO".equals(usuario.getTipo())) {
-            throw new RuntimeException("No autorizado para modificar el estado");
-        }
-        Soporte soporte = soporteRepository.findById(soporteId).orElseThrow();
+    public Soporte actualizarEstado(int soporteId, EstadoSoporte nuevoEstado) {
+        Soporte soporte = soporteRepository.findById(soporteId).orElseThrow(() -> 
+        new RuntimeException("la solicitud de soporte no encontrado con ID: " + soporteId));
         soporte.setEstado(nuevoEstado);
         if (nuevoEstado == EstadoSoporte.RESUELTO || nuevoEstado == EstadoSoporte.CERRADO) {
             soporte.setFechaResolucion(LocalDateTime.now());
@@ -51,27 +48,15 @@ public class SoporteService {
         return soporteRepository.findByUsuarioId(usuarioId);
     }
 
-    public List<Soporte> obtenerTodasLasSolicitudes(int usuarioId) {
-        UsuarioDTO usuario = usuarioClient.getUsuarioById(usuarioId);
-        if (!"SOPORTE_TECNICO".equals(usuario.getTipo())) {
-            throw new RuntimeException("No autorizado para ver todas las solicitudes");
-        }
+     public List<Soporte> obtenerTodasLasSolicitudes(int usuarioId) {
         return soporteRepository.findAll();
     }
 
-    public List<Soporte> filtrarPorTipoProblema(tipo_problema tipoProblema, int usuarioId) {
-        UsuarioDTO usuario = usuarioClient.getUsuarioById(usuarioId);
-        if (!"SOPORTE_TECNICO".equals(usuario.getTipo())) {
-            throw new RuntimeException("No autorizado para filtrar solicitudes");
-        }
+     public List<Soporte> filtrarPorTipoProblema(tipo_problema tipoProblema) {
         return soporteRepository.findByTipoProblema(tipoProblema);
     }
 
-    public List<Soporte> filtrarPorEstado(EstadoSoporte estado, int usuarioId) {
-        UsuarioDTO usuario = usuarioClient.getUsuarioById(usuarioId);
-        if (!"SOPORTE_TECNICO".equals(usuario.getTipo())) {
-            throw new RuntimeException("No autorizado para filtrar solicitudes");
-        }
+   public List<Soporte> filtrarPorEstado(EstadoSoporte estado) {
         return soporteRepository.findByEstado(estado);
     }
 }

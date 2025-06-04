@@ -31,11 +31,10 @@ public class SoporteController {
         return soporteService.crearSolicitud(usuarioId, descripcion, tipoProblema);
     }
 
-    @PutMapping("/actualizar-estado")
+    @PutMapping("/actualizar_estado")
     public Soporte actualizarEstado(@RequestParam int soporteId,
-                                @RequestParam EstadoSoporte nuevoEstado,
-                                @RequestParam int usuarioId) {
-    return soporteService.actualizarEstado(soporteId, nuevoEstado, usuarioId);
+                                @RequestParam EstadoSoporte nuevoEstado) {
+    return soporteService.actualizarEstado(soporteId, nuevoEstado);
     }
 
 
@@ -49,15 +48,13 @@ public class SoporteController {
         return soporteService.obtenerTodasLasSolicitudes(usuarioId);
     }
 
-    @GetMapping("/filtrar/tipo")
-    public List<Soporte> filtrarPorTipoProblema(@RequestParam tipo_problema tipoProblema,
-                                                @RequestParam int usuarioId) {
-        return soporteService.filtrarPorTipoProblema(tipoProblema, usuarioId);
+    @GetMapping("/filtrarportipo")
+    public List<Soporte> filtrarPorTipoProblema(@RequestParam tipo_problema tipoProblema) {
+        return soporteService.filtrarPorTipoProblema(tipoProblema);
     }
 
-    @GetMapping("/filtrar/estado")
-    public List<Soporte> filtrarPorEstado(@RequestParam EstadoSoporte estado,
-                                      @RequestParam int usuarioId) {
-    return soporteService.filtrarPorEstado(estado, usuarioId);
+    @GetMapping("/filtrarporestado")
+    public List<Soporte> filtrarPorEstado(@RequestParam EstadoSoporte estado) {
+    return soporteService.filtrarPorEstado(estado);
 }
 }
