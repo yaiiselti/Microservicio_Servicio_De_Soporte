@@ -4,18 +4,23 @@ package com.ServicioDeSoporte.Servicio_De_Soporte.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ServicioDeSoporte.Servicio_De_Soporte.model.EstadoSoporte;
+import com.ServicioDeSoporte.Servicio_De_Soporte.model.EstadoActualizacionDTO;
+import com.ServicioDeSoporte.Servicio_De_Soporte.model.FiltroEstadoDTO;
+import com.ServicioDeSoporte.Servicio_De_Soporte.model.FiltroTipoProblemaDTO;
+import com.ServicioDeSoporte.Servicio_De_Soporte.model.SolicitudCreacionDTO;
 import com.ServicioDeSoporte.Servicio_De_Soporte.model.Soporte;
-import com.ServicioDeSoporte.Servicio_De_Soporte.model.tipo_problema;
 import com.ServicioDeSoporte.Servicio_De_Soporte.service.SoporteService;
+
 
 @RestController
 @RequestMapping("/soporte")
@@ -24,37 +29,57 @@ public class SoporteController {
     @Autowired
     private SoporteService soporteService;
 
-    @PostMapping("/crear")
-    public Soporte crearSolicitud(@RequestParam int usuarioId,
-                                  @RequestParam String descripcion,
-                                  @RequestParam tipo_problema tipoProblema) {
-        return soporteService.crearSolicitud(usuarioId, descripcion, tipoProblema);
+   
+    @PostMapping("/crearsolicitud") 
+    public ResponseEntity<Soporte> crearSolicitud(@RequestBody SolicitudCreacionDTO solicitudDto) {
+    Soporte nuevaSolicitud = soporteService.crearSolicitud(
+        solicitudDto.getUsuarioId(),
+        solicitudDto.getDescripcion(),
+        solicitudDto.getTipoProblema()); 
+    return new ResponseEntity<>(nuevaSolicitud, HttpStatus.CREATED);
     }
-
-    @PutMapping("/actualizar_estado")
-    public Soporte actualizarEstado(@RequestParam int soporteId,
-                                @RequestParam EstadoSoporte nuevoEstado) {
-    return soporteService.actualizarEstado(soporteId, nuevoEstado);
+    
+    @PutMapping("/estado") 
+    public ResponseEntity<Soporte> actualizarEstado(
+        @RequestBody EstadoActualizacionDTO estadoDto) {
+        Soporte soporteActualizado = soporteService.actualizarEstado(estadoDto.getSoporteId(), estadoDto.getNuevoEstado());
+    return ResponseEntity.ok(soporteActualizado);
     }
-
 
     @GetMapping("/usuario/{usuarioId}")
-    public List<Soporte> obtenerSolicitudesPorUsuario(@PathVariable int usuarioId) {
-        return soporteService.obtenerSolicitudesPorUsuario(usuarioId);
+    public ResponseEntity<List<Soporte>> obtenerSolicitudesPorUsuario(@PathVariable int usuarioId) {
+        List<Soporte> solicitudes = soporteService.obtenerSolicitudesPorUsuario(usuarioId);
+        if (solicitudes.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+    return ResponseEntity.ok(solicitudes);
     }
 
     @GetMapping("/todas")
-    public List<Soporte> obtenerTodasLasSolicitudes(@RequestParam int usuarioId) {
-        return soporteService.obtenerTodasLasSolicitudes(usuarioId);
+    public ResponseEntity<List<Soporte>> obtenerTodasLasSolicitudes() { 
+        List<Soporte> solicitudes = soporteService.obtenerTodasLasSolicitudes();
+        if (solicitudes.isEmpty()) {
+            return ResponseEntity.noContent().build(); 
+        }
+    return ResponseEntity.ok(solicitudes);
+    }
+    
+    @PostMapping("/filtrarportipo")
+    public ResponseEntity<List<Soporte>> filtrarPorTipoProblema(@RequestBody FiltroTipoProblemaDTO filtroDto) {
+    List<Soporte> solicitudes = soporteService.filtrarPorTipoProblema(filtroDto.getTipoProblema());
+        if (solicitudes.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+    return ResponseEntity.ok(solicitudes);
     }
 
-    @GetMapping("/filtrarportipo")
-    public List<Soporte> filtrarPorTipoProblema(@RequestParam tipo_problema tipoProblema) {
-        return soporteService.filtrarPorTipoProblema(tipoProblema);
+    
+    @PostMapping("/filtrarporestado")
+    public ResponseEntity<List<Soporte>> filtrarPorEstado(@RequestBody FiltroEstadoDTO filtroDto) {
+    List<Soporte> solicitudes = soporteService.filtrarPorEstado(filtroDto.getEstado());
+        if (solicitudes.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+    return ResponseEntity.ok(solicitudes);
     }
-
-    @GetMapping("/filtrarporestado")
-    public List<Soporte> filtrarPorEstado(@RequestParam EstadoSoporte estado) {
-    return soporteService.filtrarPorEstado(estado);
-}
 }

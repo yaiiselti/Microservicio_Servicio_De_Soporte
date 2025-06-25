@@ -44,10 +44,6 @@ public class Soporte {
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_problema", nullable = false, length = 50)
     private tipo_problema tipoProblema;
-
-    @Column(name = "respuesta", length = 500)
-    private String respuesta;
-
     
     @Column(name = "fecha_resolucion")
     private LocalDateTime fechaResolucion;

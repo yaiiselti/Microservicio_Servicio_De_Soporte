@@ -20,6 +20,8 @@ public class SoporteService {
     @Autowired
     private UsuarioClient usuarioClient;
 
+    
+
     public Soporte crearSolicitud(int usuarioId, String descripcion, tipo_problema tipoProblema) {
         UsuarioDTO usuario = usuarioClient.getUsuarioById(usuarioId);
         if (usuario == null) throw new RuntimeException("Usuario no encontrado");
@@ -48,15 +50,15 @@ public class SoporteService {
         return soporteRepository.findByUsuarioId(usuarioId);
     }
 
-     public List<Soporte> obtenerTodasLasSolicitudes(int usuarioId) {
+    public List<Soporte> obtenerTodasLasSolicitudes() {
         return soporteRepository.findAll();
     }
 
-     public List<Soporte> filtrarPorTipoProblema(tipo_problema tipoProblema) {
-        return soporteRepository.findByTipoProblema(tipoProblema);
+    public List<Soporte> filtrarPorTipoProblema(tipo_problema tipoProblema) {
+    return soporteRepository.findByTipoProblema(tipoProblema);
     }
 
-   public List<Soporte> filtrarPorEstado(EstadoSoporte estado) {
-        return soporteRepository.findByEstado(estado);
+    public List<Soporte> filtrarPorEstado(EstadoSoporte estado) {
+    return soporteRepository.findByEstado(estado);
     }
 }
