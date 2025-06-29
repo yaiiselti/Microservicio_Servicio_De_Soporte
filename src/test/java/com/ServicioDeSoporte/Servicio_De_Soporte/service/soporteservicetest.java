@@ -133,7 +133,7 @@ public class soporteservicetest {
     void testObtenerSolicitudesPorUsuario_DebeRetornarListaDeSolicitudes() {
         List<Soporte> solicitudesUsuario = Arrays.asList(
             solicitudEjemplo,
-            new Soporte(2, 101, LocalDateTime.now(), EstadoSoporte.ABIERTO, "Problema con la impresora", tipo_problema.OTRO, null)
+            new Soporte(1, 101, LocalDateTime.now(), EstadoSoporte.ABIERTO, "Problema con la impresora", tipo_problema.OTRO, null)
         );
         when(soporteRepository.findByUsuarioId(101)).thenReturn(solicitudesUsuario);
 
@@ -145,7 +145,7 @@ public class soporteservicetest {
     }
 
     @Test
-    void testObtenerSolicitudesPorUsuario_DebeRetornarListaVaciaSiNoHaySolicitudes() {
+    void testObtenersolicitudesPorUsuario_debeRetornarListaVaciaSiNoHaysolicitudes() {
         when(soporteRepository.findByUsuarioId(999)).thenReturn(Collections.emptyList());
 
         List<Soporte> resultado = soporteService.obtenerSolicitudesPorUsuario(999);
@@ -186,7 +186,7 @@ public class soporteservicetest {
      @Test
     void testFiltrarPorTipoProblema_DebeRetornarSolicitudesDelTipoCorrecto() {
 
-        Soporte soporteSoftware1 = new Soporte(10, 201, LocalDateTime.now(), EstadoSoporte.ABIERTO, "Problema con IDE", tipo_problema.OTRO, null);
+        Soporte soporteSoftware1 = new Soporte(10, 201, LocalDateTime.now(), EstadoSoporte.ABIERTO, "Problema con Ia", tipo_problema.OTRO, null);
         Soporte soporteSoftware2 = new Soporte(11, 202, LocalDateTime.now(), EstadoSoporte.EN_PROCESO, "Bug en librería", tipo_problema.TECNICO, null);
 
         List<Soporte> solicitudesSoftware = Arrays.asList(
@@ -235,7 +235,7 @@ public class soporteservicetest {
 
 
     @Test
-    void testFiltrarPorEstado_DebeRetornarListaVaciaSiNoHayCoincidencias() {
+    void test_Filtrar_PorEstado_Debe_Retornar_Lista_Vacia_SiNoHay_Coincidencias() {
         when(soporteRepository.findByEstado(EstadoSoporte.CERRADO)).thenReturn(Collections.emptyList());
 
         List<Soporte> resultado = soporteService.filtrarPorEstado(EstadoSoporte.CERRADO);
