@@ -1,7 +1,6 @@
-package com.ServicioDeSoporte.Servicio_De_Soporte.service;
+package com.ServicioDeSoporte.Servicio_De_Soporte.controller;
 
 
-import com.ServicioDeSoporte.Servicio_De_Soporte.controller.SoporteController;
 import com.ServicioDeSoporte.Servicio_De_Soporte.model.EstadoActualizacionDTO;
 import com.ServicioDeSoporte.Servicio_De_Soporte.model.FiltroEstadoDTO;
 import com.ServicioDeSoporte.Servicio_De_Soporte.model.FiltroTipoProblemaDTO;
@@ -9,6 +8,7 @@ import com.ServicioDeSoporte.Servicio_De_Soporte.model.SolicitudCreacionDTO;
 import com.ServicioDeSoporte.Servicio_De_Soporte.model.Soporte;
 import com.ServicioDeSoporte.Servicio_De_Soporte.model.EstadoSoporte;
 import com.ServicioDeSoporte.Servicio_De_Soporte.model.tipo_problema;
+import com.ServicioDeSoporte.Servicio_De_Soporte.service.SoporteService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.jupiter.api.Test;
