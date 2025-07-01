@@ -1,5 +1,5 @@
 package com.ServicioDeSoporte.Servicio_De_Soporte.service;
-/*
+
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -23,9 +23,9 @@ import org.springframework.web.client.RestTemplate;
 import com.ServicioDeSoporte.Servicio_De_Soporte.model.UsuarioDTO;
 
 @ExtendWith(MockitoExtension.class)
-*/
+
 public class UsuarioClientTest {
-/*
+
     @Mock
     private RestTemplate restTemplate;
 
@@ -89,5 +89,5 @@ public class UsuarioClientTest {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatusCode());
         verify(restTemplate, times(1)).getForObject(eq(url), eq(UsuarioDTO.class));
     }
-*/
+
 }
