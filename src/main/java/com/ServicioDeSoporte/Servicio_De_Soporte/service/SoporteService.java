@@ -61,4 +61,9 @@ public class SoporteService {
     public List<Soporte> filtrarPorEstado(EstadoSoporte estado) {
     return soporteRepository.findByEstado(estado);
     }
+
+
+    public Soporte obtenerSolicitudPorId(Integer id) {
+        return soporteRepository.findById(id).orElse(null);
+    }
 }

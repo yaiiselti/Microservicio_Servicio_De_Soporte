@@ -1,42 +1,49 @@
 package com.ServicioDeSoporte.Servicio_De_Soporte.controller;
 
 
-import com.ServicioDeSoporte.Servicio_De_Soporte.model.EstadoActualizacionDTO;
-import com.ServicioDeSoporte.Servicio_De_Soporte.model.FiltroEstadoDTO;
-import com.ServicioDeSoporte.Servicio_De_Soporte.model.FiltroTipoProblemaDTO;
-import com.ServicioDeSoporte.Servicio_De_Soporte.model.SolicitudCreacionDTO;
-import com.ServicioDeSoporte.Servicio_De_Soporte.model.Soporte;
-import com.ServicioDeSoporte.Servicio_De_Soporte.model.EstadoSoporte;
-import com.ServicioDeSoporte.Servicio_De_Soporte.model.tipo_problema;
-import com.ServicioDeSoporte.Servicio_De_Soporte.service.SoporteService;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static org.hamcrest.Matchers.containsString;
+import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import org.mockito.Mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.ServicioDeSoporte.Servicio_De_Soporte.DTOAS.SoporteModelAssembler;
+import com.ServicioDeSoporte.Servicio_De_Soporte.model.EstadoActualizacionDTO;
+import com.ServicioDeSoporte.Servicio_De_Soporte.model.EstadoSoporte;
+import com.ServicioDeSoporte.Servicio_De_Soporte.model.FiltroEstadoDTO;
+import com.ServicioDeSoporte.Servicio_De_Soporte.model.FiltroTipoProblemaDTO;
+import com.ServicioDeSoporte.Servicio_De_Soporte.model.SolicitudCreacionDTO;
+import com.ServicioDeSoporte.Servicio_De_Soporte.model.Soporte;
+import com.ServicioDeSoporte.Servicio_De_Soporte.model.tipo_problema;
+import com.ServicioDeSoporte.Servicio_De_Soporte.service.SoporteService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 @WebMvcTest(SoporteController.class)
+@Import(SoporteModelAssembler.class) 
 public class SoporteControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @Mock
     private SoporteService soporteService;
 
     @Autowired
@@ -213,4 +220,34 @@ public class SoporteControllerTest {
                 .content(objectMapper.writeValueAsString(filtroDto)))
                 .andExpect(status().isNoContent());
     }
+
+    @Test
+    void obtenerSolicitudPorId_RetornaSoporteDTOASConLinksYStatus200() throws Exception {
+        Integer id = 1;
+        Soporte soporteMock = createTestSoporte(
+            id, 101,
+            "Problema conmigo",
+            tipo_problema.ACCESO,
+            EstadoSoporte.ABIERTO);
+        when(soporteService.obtenerSolicitudPorId(id)).thenReturn(soporteMock);
+
+        mockMvc.perform(get("/soporte/solicitud/{id}", id)
+        .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(id))
+        .andExpect(jsonPath("$.descripcion").value("Problema conmigo"))
+        .andExpect(jsonPath("$._links.self.href", containsString("/soporte/solicitud/" + id)));
+        verify(soporteService, times(1)).obtenerSolicitudPorId(id);
+    } 
+
+    @Test
+    void obtenerSolicitudPorId_RetornaNotFoundSiNoExiste() throws Exception {
+        Integer id = 999; 
+        when(soporteService.obtenerSolicitudPorId(id)).thenReturn(null);
+        mockMvc.perform(get("/soporte/solicitud/{id}", id)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+        verify(soporteService, times(1)).obtenerSolicitudPorId(id);
+    }
 }
+

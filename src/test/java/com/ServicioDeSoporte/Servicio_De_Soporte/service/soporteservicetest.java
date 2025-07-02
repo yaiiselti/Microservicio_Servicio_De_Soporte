@@ -16,6 +16,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.argThat;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.never;
@@ -81,6 +82,19 @@ public class soporteservicetest {
         verify(usuarioClient, times(1)).getUsuarioById(solicitudEjemplo.getUsuarioId());
     }
 
+    @Test
+    void testCrearSolicitud_DebeLanzarExcepcionCuandoUsuarioNoEncontrado() {
+        int usuarioIdInexistente = 999;
+        String descripcion = "Problema con la red";
+        tipo_problema tipoProblema = tipo_problema.TECNICO;
+            when(usuarioClient.getUsuarioById(usuarioIdInexistente)).thenReturn(null);
+            RuntimeException thrown = assertThrows(RuntimeException.class, () -> {
+            soporteService.crearSolicitud(usuarioIdInexistente, descripcion, tipoProblema);
+            });
+    assertEquals("Usuario no encontrado", thrown.getMessage());
+    verify(soporteRepository, never()).save(any(Soporte.class));
+    verify(usuarioClient, times(1)).getUsuarioById(usuarioIdInexistente);
+    }
 
     @Test
     void testActualizarEstado_DebeActualizarEstadoYFechaResolucionCuandoResuelto() {
@@ -98,6 +112,27 @@ public class soporteservicetest {
         verify(soporteRepository, times(1)).save(any(Soporte.class));
     }
 
+    @Test
+    void testActualizarEstado_DebeEstablecerFechaResolucionCuandoCerrado() {
+    solicitudEjemplo.setEstado(EstadoSoporte.ABIERTO);
+    solicitudEjemplo.setFechaResolucion(null);
+    when(soporteRepository.findById(solicitudEjemplo.getId())).thenReturn(Optional.of(solicitudEjemplo));
+    when(soporteRepository.save(any(Soporte.class))).thenAnswer(invocation -> {
+        Soporte savedSoporte = invocation.getArgument(0);
+        return savedSoporte;
+    });
+    EstadoSoporte nuevoEstado = EstadoSoporte.CERRADO;
+    Soporte resultado = soporteService.actualizarEstado(solicitudEjemplo.getId(), nuevoEstado);
+    assertNotNull(resultado);
+    assertEquals(nuevoEstado, resultado.getEstado());
+    assertNotNull(resultado.getFechaResolucion());
+    verify(soporteRepository, times(1)).save(argThat(soporte ->
+    soporte.getId() == solicitudEjemplo.getId() &&
+    soporte.getEstado().equals(EstadoSoporte.CERRADO) &&
+    soporte.getFechaResolucion() != null
+    ));
+    verify(soporteRepository, times(1)).findById(solicitudEjemplo.getId());
+}
     @Test
     void testActualizarEstado_NoDebeEstablecerFechaResolucionParaOtrosEstados() {
         when(soporteRepository.findById(solicitudEjemplo.getId())).thenReturn(Optional.of(solicitudEjemplo));
@@ -243,6 +278,28 @@ public class soporteservicetest {
         assertNotNull(resultado);
         assertTrue(resultado.isEmpty());
         verify(soporteRepository, times(1)).findByEstado(EstadoSoporte.CERRADO);
+    }
+
+    @Test
+    void testObtenerSolicitudPorId_EncuentraSoporte() {
+        Integer id = solicitudEjemplo.getId();
+        when(soporteRepository.findById(id)).thenReturn(Optional.of(solicitudEjemplo));
+
+        Soporte resultado = soporteService.obtenerSolicitudPorId(id);
+        assertNotNull(resultado);
+        assertEquals(id, resultado.getId());
+        assertEquals(solicitudEjemplo.getDescripcion(), resultado.getDescripcion());
+        verify(soporteRepository, times(1)).findById(id);
+    }
+
+    @Test
+    void testObtenerSolicitudPorId_NoEncuentraSoporte() {
+        Integer id = 999;
+        when(soporteRepository.findById(id)).thenReturn(Optional.empty());
+
+        Soporte resultado = soporteService.obtenerSolicitudPorId(id);
+        assertNull(resultado);
+        verify(soporteRepository, times(1)).findById(id);
     }
 
 }

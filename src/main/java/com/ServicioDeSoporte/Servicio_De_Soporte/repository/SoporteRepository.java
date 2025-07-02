@@ -11,8 +11,7 @@ import com.ServicioDeSoporte.Servicio_De_Soporte.model.Soporte;
 import com.ServicioDeSoporte.Servicio_De_Soporte.model.tipo_problema;
 
 public interface SoporteRepository extends JpaRepository<Soporte, Integer> {
-    @Override
-    List<Soporte> findAll();
+   
     List<Soporte> findByUsuarioId(int usuarioId);
 
     @Query("SELECT s FROM Soporte s WHERE s.tipoProblema = :tipoProblema")

@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ServicioDeSoporte.Servicio_De_Soporte.DTOAS.SoporteDTOAS;
+import com.ServicioDeSoporte.Servicio_De_Soporte.DTOAS.SoporteModelAssembler;
 import com.ServicioDeSoporte.Servicio_De_Soporte.model.EstadoActualizacionDTO;
 import com.ServicioDeSoporte.Servicio_De_Soporte.model.FiltroEstadoDTO;
 import com.ServicioDeSoporte.Servicio_De_Soporte.model.FiltroTipoProblemaDTO;
@@ -29,6 +31,9 @@ public class SoporteController {
     @Autowired
     private SoporteService soporteService;
 
+    
+    @Autowired
+    private SoporteModelAssembler assembler; 
    
     @PostMapping("/crearsolicitud") 
     public ResponseEntity<Soporte> crearSolicitud(@RequestBody SolicitudCreacionDTO solicitudDto) {
@@ -53,6 +58,15 @@ public class SoporteController {
             return ResponseEntity.noContent().build();
         }
     return ResponseEntity.ok(solicitudes);
+    }
+
+     @GetMapping("/solicitud/{id}")
+    public ResponseEntity<SoporteDTOAS> obtenerSolicitudPorId(@PathVariable Integer id) {
+        Soporte soporte = soporteService.obtenerSolicitudPorId(id);
+        if (soporte == null) {
+            return ResponseEntity.notFound().build();}
+        SoporteDTOAS soporteDTOAS = assembler.toModel(soporte); 
+        return ResponseEntity.ok(soporteDTOAS); 
     }
 
     @GetMapping("/todas")
@@ -82,4 +96,6 @@ public class SoporteController {
         }
     return ResponseEntity.ok(solicitudes);
     }
+
+
 }
